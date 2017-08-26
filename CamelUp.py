@@ -49,8 +49,9 @@ def CalcLegProbs(board, probs={}):
             slip=False
             target=camels[ind][0]+roll
             if target in bd:
-                target+=bd[target]
-                if bd[target]==-1:
+                delta=bd[target]
+                target+=delta
+                if delta==-1:
                     slip=True
             camelArray=list(camels)
             permute=list(range(len(camels)))
@@ -70,13 +71,14 @@ def CalcLegProbs(board, probs={}):
             newCamels=tuple(camelArray)
             newBoard=(newCamels,boosts)
             subProbs=CalcLegProbs(newBoard,probs)/(len(dice)*n)
-            permutedProbs=numpy.array([0.0]*len(subProbs))
-            for i in range(len(permutedProbs)):
-                permutedProbs[permute[i]]=subProbs[i]
+            invPerm=numpy.argsort(permute)
+            permutedProbs=subProbs[invPerm]
             ret+=permutedProbs
     probs[board]=ret
+    #print(camels,ret)
     return ret
 
+#boosts=((2,-1),)
 boosts=()
 camels=((1,False,True),(1,False,True),(1,False,True),(1,False,True),(1,False,True))
 board=(camels,boosts)
