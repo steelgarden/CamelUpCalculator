@@ -18,7 +18,8 @@ def useDie(c,n):
         D3=False
     return (spot,D2,D3)
 
-def CalcLegProbs(board, probs={}):
+#finish=-1 means leg probs
+def CalcProbs(board, finish, probs={}):
     #probs is a dict mapping boards to win probabilities, in the same order as the camels (loser first). Can be filled in if already partly known.
     if board in probs:
         return probs[board]
@@ -35,7 +36,7 @@ def CalcLegProbs(board, probs={}):
         if D2:
             dice.append((2,ind,topInd))
     ret=numpy.array([[0.0]*len(camels)]*len(camels))
-    if not dice:
+    if finish==-1 and not dice:
         for i in range(len(camels)):
             ret[i,i]=1
         return ret
@@ -70,7 +71,7 @@ def CalcLegProbs(board, probs={}):
             permute[destInd:destInd]=subPermute
             newCamels=tuple(camelArray)
             newBoard=(newCamels,boosts)
-            subProbs=CalcLegProbs(newBoard,probs)/(len(dice)*n)
+            subProbs=CalcProbs(newBoard,finish,probs)/(len(dice)*n)
             invPerm=numpy.argsort(permute)
             permutedProbs=subProbs[:,invPerm]
             ret+=permutedProbs
@@ -78,11 +79,11 @@ def CalcLegProbs(board, probs={}):
     #print(camels,ret)
     return ret
 
-#boosts=((2,-1)),
-boosts=()
-camels=((1,False,True),(1,False,True),(1,False,True),(1,False,True),(1,False,False))
+boosts=((10,-1)),
+#boosts=()
+camels=((1,False,True),(3,False,True),(5,False,True),(7,False,True),(9,False,False))
 board=(camels,boosts)
-print(CalcLegProbs(board))
+print(CalcProbs(board, -1))
 
             
             
