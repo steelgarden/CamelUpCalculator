@@ -34,10 +34,10 @@ def CalcLegProbs(board, probs={}):
             dice.append((3,ind,topInd))
         if D2:
             dice.append((2,ind,topInd))
-    ret=numpy.array([0.0]*len(camels))
-    
+    ret=numpy.array([[0.0]*len(camels)]*len(camels))
     if not dice:
-        ret[-1]+=1
+        for i in range(len(camels)):
+            ret[i,i]=1
         return ret
 
     bd={}
@@ -72,15 +72,15 @@ def CalcLegProbs(board, probs={}):
             newBoard=(newCamels,boosts)
             subProbs=CalcLegProbs(newBoard,probs)/(len(dice)*n)
             invPerm=numpy.argsort(permute)
-            permutedProbs=subProbs[invPerm]
+            permutedProbs=subProbs[:,invPerm]
             ret+=permutedProbs
     probs[board]=ret
     #print(camels,ret)
     return ret
 
-#boosts=((2,-1),)
+#boosts=((2,-1)),
 boosts=()
-camels=((1,False,True),(1,False,True),(1,False,True),(1,False,True),(1,False,True))
+camels=((1,False,True),(1,False,True),(1,False,True),(1,False,True),(1,False,False))
 board=(camels,boosts)
 print(CalcLegProbs(board))
 
