@@ -1,5 +1,5 @@
 import numpy
-
+import cProfile
 #camel=(pos,D2,D3)
 #board=((camel1, ..., camel5),((spot,+-1),...)), back camel first, 2nd tuple is oases/mirages
 
@@ -41,14 +41,17 @@ def CalcProbs(board, finish, isLeg, probs={}):
             dice.append((3,ind,topInd))
         if D2:
             dice.append((2,ind,topInd))
-    ret=numpy.array([[0.0]*len(camels)]*len(camels))
+    #ret=numpy.array([[0.0]*len(camels)]*len(camels))
+    ret=numpy.zeros((len(camels),len(camels)))
     if camels[-1][0]>=finish or (isLeg and not dice):
         for i in range(len(camels)):
             ret[i,i]=1
         return ret
 
     if not dice:
-        camels=tuple(setDie(c,3,True) for c in camels)
+        #c0=setDie(camels[0],2,True)
+        c0=camels[0]
+        camels=tuple(setDie(c,3,True) for c in ((c0,)+camels[1:]))
         return CalcProbs((camels,()), finish, isLeg, probs)
     
     bd={}
@@ -91,10 +94,15 @@ def CalcProbs(board, finish, isLeg, probs={}):
 
 boosts=((10,-1)),
 boosts=()
-camels=((1,False,True),(1,False,True),(1,False,True),(1,False,True),(1,False,True))
+camels=((1,False,True),(2,False,True),(2,False,True),(2,False,True),(2,False,True))
 board=(camels,boosts)
-print(CalcProbs(board, 17, False))
-print(calls)
+#cProfile.run('print(CalcProbs(board, 10, False))')
+probs=CalcProbs(board, 16, False)
+print(probs)
+#payoffs=numpy.array([[-1,-1,-1,1,5],[-1,-1,-1,1,3], [-1,-1,-1,1,2]])
+payoffs=numpy.array([[-1,-1,-1,-1,8],[8,-1,-1,-1,-1]])
+print numpy.matmul(payoffs, probs)
+
             
             
 
